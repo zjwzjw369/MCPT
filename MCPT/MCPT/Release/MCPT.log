@@ -1,0 +1,23 @@
+﻿  main.cpp
+c:\users\administrator\desktop\opengl\mcpt\mcpt\model.hpp(76): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\model.hpp(82): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\model.hpp(94): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\model.hpp(107): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\model.hpp(109): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\imageio.hpp(7): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\KDTree.hpp(28): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\KDTree.hpp(72): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\KDTree.hpp(78): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\KDTree.hpp(85): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\KDTree.hpp(103): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\desktop\opengl\mcpt\mcpt\KDTree.hpp(104): warning C4018: '<': signed/unsigned mismatch
+main.cpp(15): warning C4018: '<': signed/unsigned mismatch
+main.cpp(163): warning C4018: '<': signed/unsigned mismatch
+main.cpp(177): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  1 of 689 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  MCPT.vcxproj -> C:\Users\Administrator\Desktop\openGL\MCPT\Release\MCPT.exe
+  MCPT.vcxproj -> C:\Users\Administrator\Desktop\openGL\MCPT\Release\MCPT.pdb (Full PDB)

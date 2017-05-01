@@ -1,0 +1,15 @@
+﻿  main.cpp
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\model.hpp(63): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\model.hpp(69): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\model.hpp(81): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\model.hpp(94): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\model.hpp(96): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\imageio.hpp(7): warning C4018: '<': signed/unsigned mismatch
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\intersecttriangle.hpp(31): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\intersecttriangle.hpp(50): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\intersecttriangle.hpp(58): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\intersecttriangle.hpp(63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\main.cpp(12): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\administrator\documents\visual studio 2015\projects\mcpt\mcpt\main.cpp(16): warning C4018: '<': signed/unsigned mismatch
+  MCPT.vcxproj -> C:\Users\Administrator\documents\visual studio 2015\Projects\MCPT\Debug\MCPT.exe
+  MCPT.vcxproj -> C:\Users\Administrator\documents\visual studio 2015\Projects\MCPT\Debug\MCPT.pdb (Partial PDB)
