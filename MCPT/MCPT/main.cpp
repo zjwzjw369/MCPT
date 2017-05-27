@@ -48,8 +48,8 @@ void renderDepth(Vector3 *pixels, double maxDepth) {
 			//	pixels[index].y = depth;
 			//	pixels[index].z = depth;
 				
-				pixels[index] = result.normal;
-			//	pixels[index].x = (result.normal.x);
+				pixels[index] = result.normal.Dot(ray.direction) < 0 ? result.normal : result.normal*-1.0;;
+				//pixels[index] = result.normal;
 			//	pixels[index].y = (result.normal.y);
 			//	pixels[index].z = (result.normal.z);
 				//pixels[index] = result.mesh->diffuseColor;
@@ -64,7 +64,10 @@ void renderDepth(Vector3 *pixels, double maxDepth) {
 Color MCPTRecurisve(Ray ray,int depth,int seed) {
 	depth++;
 	Result result = SceneIntersect(ray);
-	if (result.isEmpty) return Color(0.0);
+	if (result.isEmpty) return Color(0.0); 
+	if (result.mesh->ambientColor.Max()>0.5) {
+		return result.mesh->ambientColor;
+	}//change
 	//cout << result.distance << endl;
 	Color f = result.mesh->diffuseColor;
 	double p = f.Max();
@@ -74,14 +77,14 @@ Color MCPTRecurisve(Ray ray,int depth,int seed) {
 		if ((rand()%100)/100.0 < p)	f = f*(1 / p);
 		else return result.mesh->ambientColor;
 	}
-	if (depth > 100) return result.mesh->ambientColor;
+	if (depth > 20) return result.mesh->ambientColor;
 	switch (result.mesh->material){
 	case Mesh::diffuse: {
 		double r1 = 2.0 * M_PI*((rand() % 100) / 100.0);
 		double r2 = ((rand() % 100) / 100.0);
 		double r2_sqrt = sqrt(r2);
 		Vector3 w = normal_real;
-		Vector3 u = (fabs(w.x) > 0.1 ? Vector3(0.0, 1.0, 0.0) : Vector3(1.0).Cross(w)).Normalize();
+		Vector3 u = (fabs(w.x) > 0.1 ? Vector3(0.0, 1.0, 0.0) : Vector3(1.0,0.0,0.0).Cross(w)).Normalize();
 		Vector3 v = w.Cross(u);
 		Vector3 dir = ((u*cos(r1)*r2_sqrt + v*sin(r1)*r2_sqrt + w*sqrt(1 - r2))).Normalize();
 		return result.mesh->ambientColor + f*(MCPTRecurisve(Ray(result.position, dir), depth,seed));
@@ -133,7 +136,7 @@ Color MCPTRecurisve(Ray ray,int depth,int seed) {
 }
 void renderMCPT(Vector3 *pixels, int depth) {
 	int index = 0;
-	int nsample = 20;
+	int nsample = 4;
 	for (int y = 0; y < height; ++y) {
 	//	now_time = clock();
 		//system("cls");
@@ -187,34 +190,43 @@ Color KDTreeMCPTRecurisve(Ray ray, int depth, int seed,KDNode& KDTree) {
 	double inf = INF;
 	if (!KDTree.hit(&KDTree,ray,&result,&inf)) return Color(0.0);
 	//cout << result.distance << endl;
+	if (result.mesh->ambientColor.Max()>0.5) {
+		return result.mesh->ambientColor;
+	}//change
 	Color f = result.mesh->diffuseColor;
 	double p = f.Max();
 	//return result.normal;
 	//cout << p<< endl; 
 	Vector3 normal_real = result.normal.Dot(ray.direction) < 0 ? result.normal : result.normal*-1.0;
 	if (depth > 5) {
-		if ((rand() % 100) / 100.0 < p)	f = f*(1 / p);
+		if (rand() /(double)RAND_MAX < p)	f = f*(1 / p);
 		else return result.mesh->ambientColor;
 	}
-	if (depth > 100) return result.mesh->ambientColor;
+
+	if (depth > 20) {
+		return result.mesh->ambientColor;
+	}
 	switch (result.mesh->material) {
 	case Mesh::diffuse: {
-		double r1 = 2.0 * M_PI*((rand() % 100) / 100.0);
-		double r2 = ((rand() % 100) / 100.0);
+		double r1 = 2.0 * M_PI*rand() / (double)RAND_MAX;
+		double r2 = rand() / (double)RAND_MAX;
 		double r2_sqrt = sqrt(r2);
 		Vector3 w = normal_real;
 		Vector3 u = (fabs(w.x) > 0.1 ? Vector3(0.0, 1.0, 0.0) : Vector3(1.0,0.0,0.0).Cross(w)).Normalize();
 		Vector3 v = w.Cross(u);
 		Vector3 dir = ((u*cos(r1)*r2_sqrt + v*sin(r1)*r2_sqrt + w*sqrt(1 - r2))).Normalize();
-		return result.mesh->ambientColor + f*(MCPTRecurisve(Ray(result.position, dir), depth, seed));
+		return result.mesh->ambientColor + f*(KDTreeMCPTRecurisve(Ray(result.position, dir), depth, seed, KDTree));
 		break;
 	}
 	case Mesh::mirror: {
+		
 		Vector3 dir_ref = ray.direction - result.normal * 2 * result.normal.Dot(ray.direction);
-		return result.mesh->ambientColor + MCPTRecurisve(Ray(result.position, dir_ref), depth, seed);//
+		return result.mesh->ambientColor + KDTreeMCPTRecurisve(Ray(result.position, dir_ref), depth, seed, KDTree);
+		
 		break;
 	}
 	case Mesh::reflective: {
+		
 		Ray ray_refl(result.position, (ray.direction - result.normal * 2 * result.normal.Dot(ray.direction)));//
 		bool into = result.normal.Dot(normal_real)>0;
 		double nc = 1.0;//真空
@@ -223,7 +235,7 @@ Color KDTreeMCPTRecurisve(Ray ray, int depth, int seed,KDNode& KDTree) {
 		double ddn = ray.direction.Dot(normal_real)*-1;//入射角余弦
 		double sin_2_t = (1 - ddn*ddn)*nnt*nnt;
 		if (sin_2_t > 1.0)//全内反射
-			return result.mesh->ambientColor + f*MCPTRecurisve(ray_refl, depth, seed);
+			return result.mesh->ambientColor + f*KDTreeMCPTRecurisve(ray_refl, depth, seed, KDTree);
 		double sin_t = sqrt(sin_2_t);
 		double cos_t = sqrt(1 - sin_2_t);
 		Vector3 refr_dir = normal_real*(-1 * cos_t) + (ray.direction + normal_real*ddn).Normalize()*sin_t;
@@ -235,14 +247,14 @@ Color KDTreeMCPTRecurisve(Ray ray, int depth, int seed,KDNode& KDTree) {
 						   //cout << Fr << " " << Fe << endl;
 		if (depth > 2) {
 			double P = 0.25 + 0.5 * Fe;
-			if (((rand() % 100) / 100.0) < P)
-				return MCPTRecurisve(ray_refl, depth, seed) * (Fe / P);
+			if ((rand() /(double)RAND_MAX) < P)
+				return KDTreeMCPTRecurisve(ray_refl, depth, seed, KDTree) * (Fe / P);
 			else
-				return MCPTRecurisve(ray_refr, depth, seed) * (Fr / (1 - P));
+				return KDTreeMCPTRecurisve(ray_refr, depth, seed, KDTree) * (Fr / (1 - P));
 		}
 		else {
-			return MCPTRecurisve(ray_refl, depth, seed) * Fe
-				+ MCPTRecurisve(ray_refr, depth, seed) * Fr;
+			return KDTreeMCPTRecurisve(ray_refl, depth, seed, KDTree) * Fe
+				+ KDTreeMCPTRecurisve(ray_refr, depth, seed, KDTree) * Fr;
 		}
 		break;
 	}
@@ -254,7 +266,7 @@ Color KDTreeMCPTRecurisve(Ray ray, int depth, int seed,KDNode& KDTree) {
 
 void KDTreeRenderMCPT(Vector3 *pixels, int depth, KDNode& KDTree) {
 	int index = 0;
-	int nsample = 500;
+	int nsample = 10;
 	for (int y = 0; y < height; ++y) {
 		//	now_time = clock();
 		//system("cls");
@@ -284,6 +296,7 @@ int main() {
 	KDNode* KDTree = new KDNode();
 	KDTree=KDTree->build(rootNodeT, 0);
 	KDTreeRenderMCPT(pixels, 0, *KDTree);
+	srand(2017527);
 	//renderMCPT(pixels,0);
 	clock_t c2 = clock();
 	cout << (c2 - c1) / (double)CLOCKS_PER_SEC << endl;

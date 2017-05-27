@@ -43,7 +43,7 @@ bool IntersectTriangle(const Vector3& orig, const Vector3& dir,
 	}
 
 	// If determinant is near zero, ray lies in plane of triangle
-	if (det < 0.0001f)
+	if (det < 0.0000001)
 		return false;
 
 	// Calculate u and make sure u <= 1
@@ -62,14 +62,14 @@ bool IntersectTriangle(const Vector3& orig, const Vector3& dir,
 	// Calculate t, scale parameters, ray intersects triangle
 	*t = E2.Dot(Q);
 
-	if (*t<0.000001) {
+	if (*t<0.0000001) {
 		return false;
 	}
 	double fInvDet = 1.0f / det;
 	*t *= fInvDet;
 	*u *= fInvDet;
 	*v *= fInvDet;
-	if ((*t)<0.000001) {
+	if ((*t)<0.0000001) {
 		return false;
 	}
 

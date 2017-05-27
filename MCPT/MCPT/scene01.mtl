@@ -1,6 +1,6 @@
 newmtl blinn2SG
 illum 4
-Kd 0.80 0.80 0.80
+Kd 0.00 0.00 0.00
 Ka 0.78 0.78 0.78
 newmtl initialShadingGroup
 illum 4
