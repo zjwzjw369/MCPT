@@ -11,22 +11,22 @@ struct KDNode{
 
 bool KDNode::hit(KDNode* node, const Ray& ray, Result *result,double *minDis) const {
 	Vector3 vchit;
-	//¼ì²é¹âÏßÊÇ·ñÓëµ±Ç°½ÚµãÏà½»
+	//æ£€æŸ¥å…‰çº¿æ˜¯å¦ä¸å½“å‰èŠ‚ç‚¹ç›¸äº¤
 	result->isEmpty = true;
 	Result minResult;
 	if (node->bbox.intersectWithAABB(ray,&vchit)) {
 		bool hit_tri = false;
-		//Èç¹û×Ó½Úµã»¹ÓĞÈı½ÇĞÎ£¬µİ¹éÁ½±ß²¢¼ì²éÊÇ·ñÓĞ½»
+		//å¦‚æœå­èŠ‚ç‚¹è¿˜æœ‰ä¸‰è§’å½¢ï¼Œé€’å½’ä¸¤è¾¹å¹¶æ£€æŸ¥æ˜¯å¦æœ‰äº¤
 		if (node->left->triangles.size()>0||node->right->triangles.size()>0) {
 			bool hitleft = hit(node->left, ray, result, minDis);
 			bool hitright = hit(node->right, ray, result, minDis);
 			return hitleft || hitright;
 		}else {
-			//µ½´ï×Ó½Úµã
+			//åˆ°è¾¾å­èŠ‚ç‚¹
 			//double minDis = INF;
 			double t = 0.0, u = 0.0, v = 0.0;
 			for (int i = 0; i < node->triangles.size(); i++) {
-				//Èç¹ûÓĞ½»£¬·µ»Ø½»µãÒÔ¼°·¨Ïò
+				//å¦‚æœæœ‰äº¤ï¼Œè¿”å›äº¤ç‚¹ä»¥åŠæ³•å‘
 				if (IntersectTriangle(ray.origin,ray.direction, node->triangles[i]->vertics[0].Position, node->triangles[i]->vertics[1].Position, node->triangles[i]->vertics[2].Position,&t,&u,&v)) {
 					if (t<*minDis) {
 						hit_tri = true;
@@ -68,7 +68,7 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris, int depth) const {
 		return node;
 	}
 	node->bbox = tris[0]->get_bounding_box();
-	//»ñµÃ°üÎ§È«²¿Èı½ÇĞÎµÄbounding box
+	//è·å¾—åŒ…å›´å…¨éƒ¨ä¸‰è§’å½¢çš„bounding box
 	for (int i = 1; i < tris.size();i++) {
 		node->bbox.expand(tris[i]->get_bounding_box());
 	}
@@ -76,14 +76,15 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris, int depth) const {
 	//cout << node->bbox.max<<""<<node->bbox.min << endl;
 	Vector3 midPoint(0.0);
 	for (int i = 0; i < tris.size();i++) {
-		//ÕÒµ½ËùÓĞÈı½ÇĞÎµÄÖĞµã
-		midPoint = midPoint + (tris[i]->get_midpoint()*(1.0 / tris.size()));
+		//æ‰¾åˆ°æ‰€æœ‰ä¸‰è§’å½¢çš„ä¸­ç‚¹
+		midPoint = midPoint + tris[i]->get_midpoint(); //(tris[i]->get_midpoint()*(1.0 / tris.size()));
 	}
+	midPoint /= tris.size();//å°†é™¤æ³•æ”¾åœ¨å¾ªç¯å¤–é¢ã€‚
 	std::vector<Triangle*> left_tris;
 	std::vector<Triangle*> right_tris;
 	int axis = node->bbox.longest_axis();
 	for (int i = 0; i < tris.size();i++) {
-		//ÔÚ×î³¤µÄÖáÉÏ¶ÔÈı½ÇĞÎ½øĞĞ·Ö¸î
+		//åœ¨æœ€é•¿çš„è½´ä¸Šå¯¹ä¸‰è§’å½¢è¿›è¡Œåˆ†å‰²
 		switch (axis){
 		case 0:
 			midPoint.x >= tris[i]->get_midpoint().x ? right_tris.push_back(tris[i]) : left_tris.push_back(tris[i]);
@@ -99,7 +100,7 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris, int depth) const {
 	if (left_tris.size() == 0 && right_tris.size()>0) left_tris = right_tris;
 	if (right_tris.size() == 0 && left_tris.size()>0) right_tris = left_tris;
 	int matches = 0;
-	//Èç¹û50%Èı½ÇĞÎÆ¥Åä£¬²»ÔÙĞèÒªÆ½·Ö
+	//å¦‚æœ50%ä¸‰è§’å½¢åŒ¹é…ï¼Œä¸å†éœ€è¦å¹³åˆ†
 	for (int i = 0; i < left_tris.size(); i++) {
 		for (int j = 0; j < right_tris.size(); j++) {
 			if (left_tris[i] == right_tris[j])
@@ -107,7 +108,7 @@ KDNode* KDNode::build(std::vector<Triangle*>& tris, int depth) const {
 		}
 	}
 	if ((double)matches / left_tris.size() < 0.5 && (double)matches / right_tris.size() < 0.5) {
-		//µİ¹é½¨Ê÷
+		//é€’å½’å»ºæ ‘
 		node->left = build(left_tris, depth + 1);
 		node->right = build(right_tris, depth + 1);
 	}
